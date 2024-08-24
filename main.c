@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 typedef struct Map Map;
 typedef struct Key Key;
@@ -16,6 +17,7 @@ struct Map
     int airport_size;
     char *(*get)(Map *self, char *key);
     void (*add)(Map *self, char *key, char *name);
+    void (*update)(Map *self, char *key, char *name);
     void (*delete)(Map *self, char *key);
     void (*print_items)(Map *self);
 };
@@ -57,30 +59,166 @@ AirportNode *get_node(Map *self, char *key);
 
 char *get(Map *self, char *key);
 void add(Map *self, char *key, char *name);
+void update(Map *self, char *key, char *name);
 void delete(Map *self, char *key);
 void print_items(Map *self);
 void traverse_post_order_and_release_nodes(AirportNode *node);
+void clear_buffer();
 AirportNode *traverse_and_get_node(Map *self, AirportNode *node, char *key);
 
 int main()
 {
     Map *map = initialize_map();
-
-    map->add(map, "MCO", "Orlando International");
     map->add(map, "STI", "Aeropuerto Cibao");
     map->add(map, "SDQ", "Aeropuerto Las Americas");
-    map->print_items(map);
 
-    printf("\nget('MCO') = %s\n", map->get(map, "MCO"));
-    printf("\nget('STI') = %s\n", map->get(map, "STI"));
-    printf("\nget('SDQ') = %s\n", map->get(map, "SDQ"));
+    int option = 0;
+    int action = 0;
+    bool looping = true;
 
-    printf("\ndelete('MCO')\n");
-    map->delete (map, "MCO");
-    map->print_items(map);
-    printf("\ndelete('SDQ')\n");
-    map->delete (map, "SDQ");
-    map->print_items(map);
+    while (looping)
+    {
+        printf("Welcome to the flights app. Choose one of these options:\n");
+        printf("1- Manage airports.\n");
+        printf("2- Manage connections.\n");
+        printf("3- Get best routes.\n");
+        printf("4- Exit.\n\n");
+        scanf("%d", &option);
+
+        switch (option)
+        {
+        case 1:
+        {
+            while (option == 1)
+            {
+                printf("What do you want to do with the airports?\n\n");
+                printf("1- Create an airport.\n");
+                printf("2- Update an airport.\n");
+                printf("3- Delete an airport.\n");
+                printf("4- Find an airport.\n");
+                printf("5- Go back.\n");
+                scanf("%d", &action);
+                clear_buffer();
+
+                switch (action)
+                {
+                case 1:
+                {
+                    char *code = NULL;
+                    char *name = NULL;
+
+                    code = malloc(sizeof(char) + 3);
+                    if (code == NULL)
+                    {
+                        printf("Cannot allocate 4 bytes for strings\n");
+                        exit(EXIT_FAILURE);
+                    }
+
+                    name = malloc(sizeof(char) * 100);
+                    if (name == NULL)
+                    {
+                        printf("Cannot allocate 100 bytes for strings\n");
+                        exit(EXIT_FAILURE);
+                    }
+                    printf("Please insert the code of the airport:\n");
+                    scanf("%s", code);
+                    clear_buffer();
+                    printf("Code of the airport is: %s\n", code);
+                    printf("Please insert the name of the airport:\n");
+                    scanf("%[^\n]s", name);
+                    clear_buffer();
+                    printf("Name of the airport is: %s\n", name);
+
+                    map->add(map, code, name);
+                    map->print_items(map);
+
+                    break;
+                }
+
+                case 2:
+                {
+                    char *code = NULL;
+                    char *name = NULL;
+
+                    code = malloc(sizeof(char) + 3);
+                    if (code == NULL)
+                    {
+                        printf("Cannot allocate 4 bytes for strings\n");
+                        exit(EXIT_FAILURE);
+                    }
+
+                    name = malloc(sizeof(char) * 100);
+                    if (name == NULL)
+                    {
+                        printf("Cannot allocate 100 bytes for strings\n");
+                        exit(EXIT_FAILURE);
+                    }
+                    printf("Please insert the code of the airport:\n");
+                    scanf("%s", code);
+                    clear_buffer();
+                    printf("Code of the airport is: %s\n", code);
+                    printf("Please insert the name of the airport:\n");
+                    scanf("%[^\n]s", name);
+                    clear_buffer();
+                    printf("Name of the airport is: %s\n", name);
+
+                    map->update(map, code, name);
+                    map->print_items(map);
+                    break;
+                }
+
+                case 3:
+                    printf("Coming soon!\n\n");
+                    break;
+
+                case 4:
+                    printf("Coming soon!\n\n");
+                    break;
+
+                case 5:
+                {
+                    option = 0;
+                    break;
+                }
+
+                default:
+                    printf("This option don't exist. Please try again.\n");
+                    break;
+                }
+            }
+            break;
+        }
+
+        case 2:
+            printf("Coming soon!\n\n");
+            break;
+
+        case 3:
+            printf("Coming soon!\n\n");
+            break;
+
+        case 4:
+        {
+            printf("Goodbye!\n");
+            looping = false;
+            break;
+        }
+
+        default:
+            printf("This option don't exist. Please try again.\n");
+        }
+    }
+
+    // printf("\nget('MCO') = %s\n", map->get(map, "MCO"));
+    // printf("\nget('STI') = %s\n", map->get(map, "STI"));
+    // printf("\nget('SDQ') = %s\n", map->get(map, "SDQ"));
+
+    // printf("\ndelete('MCO')\n");
+    // map->delete (map, "MCO");
+    // map->print_items(map);
+    // printf("\ndelete('SDQ')\n");
+    // map->delete (map, "SDQ");
+    // map->print_items(map);
 
     release_map(map);
 
@@ -102,6 +240,12 @@ Map *initialize_map()
     map->print_items = &print_items;
 
     return map;
+}
+
+void clear_buffer()
+{
+    while ((getchar()) != '\n')
+        ;
 }
 
 void release_map(Map *map)
@@ -136,6 +280,7 @@ void traverse_post_order_and_release_nodes(AirportNode *node)
     {
         traverse_post_order_and_release_nodes(node->next);
     }
+    free(node->name);
     free(node);
 }
 
@@ -302,6 +447,21 @@ void add(Map *self, char *str_key, char *str_value)
     }
     else
     {
+        printf("This airport already exist. Did you mean to update it instead?\n");
+    }
+}
+
+void update(Map *self, char *str_key, char *str_value)
+{
+    AirportNode *node = get_node(self, str_key);
+
+    if (node == NULL)
+    {
+        printf("This airport does not exist. Did you mean to create it instead?\n");
+    }
+    else
+    {
+        free(node->name);
         node->name = str_value;
     }
 }
