@@ -107,7 +107,7 @@ int main()
                     char *code = NULL;
                     char *name = NULL;
 
-                    code = malloc(sizeof(char) + 3);
+                    code = malloc(sizeof(char) * 4);
                     if (code == NULL)
                     {
                         printf("Cannot allocate 4 bytes for strings\n");
@@ -121,11 +121,11 @@ int main()
                         exit(EXIT_FAILURE);
                     }
                     printf("Please insert the code of the airport:\n");
-                    scanf("%s", code);
+                    scanf("%3s", code);
                     clear_buffer();
                     printf("Code of the airport is: %s\n", code);
                     printf("Please insert the name of the airport:\n");
-                    scanf("%[^\n]s", name);
+                    scanf("%100[^\n]s", name);
                     clear_buffer();
                     printf("Name of the airport is: %s\n", name);
 
@@ -154,11 +154,11 @@ int main()
                         exit(EXIT_FAILURE);
                     }
                     printf("Please insert the code of the airport:\n");
-                    scanf("%s", code);
+                    scanf("%3s", code);
                     clear_buffer();
                     printf("Code of the airport is: %s\n", code);
                     printf("Please insert the name of the airport:\n");
-                    scanf("%[^\n]s", name);
+                    scanf("%100[^\n]s", name);
                     clear_buffer();
                     printf("Name of the airport is: %s\n", name);
 
@@ -244,7 +244,7 @@ Map *initialize_map()
 
 void clear_buffer()
 {
-    while ((getchar()) != '\n')
+    while (getchar() != '\n')
         ;
 }
 
